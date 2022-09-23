@@ -12,3 +12,7 @@ This code is intended to be run in `backend/public/` folder.
 - Either
 - - run it using `node index.js` inside `/backend/public/` folder
 - - or pass it as option: `node index.js --backendPublicFolder=path/to/backend/public/`
+
+## Notes
+- Note that while writing migrations, write in a manner that executing the same migration multple times does not corrupt data.
+- Note that `props` of widgets are being kept in the database. You can not do any migrations on them here. Neither can you create or remove them.
