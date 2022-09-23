@@ -3,7 +3,13 @@ const fs = require('fs');
 const { cloneDeep, isEqual } = require('lodash');
 const glob = require('glob');
 
-glob(path.resolve(__dirname, '**/*.json'), (err, result) => {
+const backendPublicFolder = (/--backendPublicFolder=([^\s]*)/.exec(
+  process.argv.join(" ")
+) || [])[1];
+
+glob(
+  path.resolve(backendPublicFolder || __dirname, '**/*.json'),
+  (_err, result) => {
   result.forEach(file => {
     const content = fs.readFileSync(file);
 
