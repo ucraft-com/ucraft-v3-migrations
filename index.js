@@ -7,25 +7,123 @@ const backendPublicFolder = (/--backendPublicFolder=([^\s]*)/.exec(
   process.argv.join(" ")
 ) || [])[1];
 
+const uploadButtonFormItemConfig = [
+  {
+    type: "button",
+    hash: "c7c97734-64e3-4073-985a-288cd03c9965",
+    params: {
+      show: true,
+      variantsStyles: [
+        {
+          breakpointId: "3",
+          cssState: "normal",
+          styles: [
+            {
+              type: "color",
+              value: "inherit",
+            },
+            {
+              type: "background",
+              value:
+                '[{"type":"solid","value":"rgb(245, 245, 245)","opacity":1,"active":true}]',
+            },
+            {
+              type: "border-color",
+              value: "rgb(217, 217, 217)",
+            },
+            {
+              type: "border-top-left-radius",
+              value: "13px",
+            },
+            {
+              type: "border-top-right-radius",
+              value: "13px",
+            },
+            {
+              type: "border-bottom-left-radius",
+              value: "13px",
+            },
+            {
+              type: "border-bottom-right-radius",
+              value: "13px",
+            },
+          ],
+        },
+      ],
+      settings: [],
+      key: "btn",
+      content: {
+        exclude: ["link"],
+      },
+      isMicroElement: true,
+    },
+    children: [
+      {
+        type: "icon",
+        hash: "77643aeb-b87f-40dc-a394-d24c9551eadb",
+        params: {
+          show: true,
+          variantsStyles: [
+            {
+              breakpointId: "3",
+              cssState: "normal",
+              styles: [
+                {
+                  type: "margin-right",
+                  value: "4px",
+                },
+              ],
+            },
+          ],
+          settings: [],
+          key: "icn",
+          isMicroElement: true,
+          showContentInParent: true,
+          props: {
+            iconKey: "UploadOutlined",
+          },
+        },
+        children: [],
+      },
+      {
+        type: "label",
+        hash: "408c3ec7-585a-423d-8229-a5ae72f0fa1b",
+        params: {
+          show: true,
+          variantsStyles: [],
+          settings: [],
+          key: "lbl",
+          isMicroElement: true,
+          showContentInParent: true,
+          props: {
+            text: "Upload",
+          },
+        },
+        children: [],
+      },
+    ],
+  },
+];
+
 glob(
   path.resolve(backendPublicFolder || __dirname, '**/*.json'),
   (_err, result) => {
-  result.forEach(file => {
-    const content = fs.readFileSync(file);
+    result.forEach((file) => {
+      const content = fs.readFileSync(file);
 
-    const layout = JSON.parse(content.toString());
+      const layout = JSON.parse(content.toString());
 
-    const newLayout = migrate(cloneDeep(layout));
+      const newLayout = migrate(cloneDeep(layout));
 
-    if (!isEqual(layout, newLayout)) {
-      console.log('prev: ', layout);
-      console.log('then: ', newLayout);
+      if (!isEqual(layout, newLayout)) {
+        console.log('prev: ', layout);
+        console.log('then: ', newLayout);
 
-      fs.writeFileSync(file, JSON.stringify(newLayout, null, 2));
-    }
-
-  });
-});
+        fs.writeFileSync(file, JSON.stringify(newLayout, null, 2));
+      }
+    });
+  }
+);
 
 function migrate(layout) {
   const newLayout = [];
@@ -34,8 +132,12 @@ function migrate(layout) {
     return layout;
   }
 
-  layout.forEach(widget => {
-    if (widget.type === 'checkoutSubmitButton' && Array.isArray(widget.children) && widget.children.length > 0) {
+  layout.forEach((widget) => {
+    if (
+      widget.type === 'checkoutSubmitButton' &&
+      Array.isArray(widget.children) &&
+      widget.children.length > 0
+    ) {
       widget = widget.children[0];
       widget.params.variantType = 'BUTTON_CHECKOUT';
       widget.params.key = 'btn';
@@ -51,6 +153,16 @@ function migrate(layout) {
       widget.type = 'button';
       widget.params.variantType = 'BUTTON_SUBMIT';
       widget.params.key = 'btn';
+    }
+
+    if (widget.type === 'formItem' && widget.children.length > 0) {
+      const isUploadButton = widget.params.settings?.validations.find(
+        (validation) => validation.type === 'acceptTypes'
+      );
+
+      if (isUploadButton) {
+        widget.children = uploadButtonFormItemConfig;
+      }
     }
 
     migrateShippingAndBillingDetailsWidgets(widget);
