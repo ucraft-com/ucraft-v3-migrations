@@ -106,7 +106,7 @@ const uploadButtonFormItemConfig = [
 ];
 
 glob(
-  path.resolve(backendPublicFolder || __dirname, '**/*.json'),
+  path.resolve(backendPublicFolder || __dirname, '**/*.json').replace(/\\/gmi,'/'),
   (_err, result) => {
     result.forEach((file) => {
       const content = fs.readFileSync(file);
@@ -166,6 +166,7 @@ function migrate(layout) {
     }
 
     migrateShippingAndBillingDetailsWidgets(widget);
+    migrateBurgerMenuToButton(widget);
 
     if (Array.isArray(widget.children)) {
       widget.children = migrate(widget.children);
@@ -175,6 +176,34 @@ function migrate(layout) {
   });
 
   return newLayout;
+}
+
+function migrateBurgerMenuToButton(widget) {
+  if (widget.type === 'icon' && widget.params.labelKey === 'burgerMenu') {
+    widget.type = 'button';
+    widget.key = 'btn';
+    widget.params.props = { contentType: 'iconOnly' };
+    widget.children = [{
+      type: 'icon',
+      params: {
+        key: 'icn',
+        isMicroElement: true,
+        showContentInParent: true,
+        props: { iconKey: 'MenuOutlined' },
+        labelKey: 'burgerMenuIcon',
+        variantsStyles: []
+      }
+    },
+    {
+      type: 'label',
+      params: {
+        key: 'lbl',
+        isMicroElement: true,
+        showContentInParent: true,
+        props: { text: 'Label' }
+      }
+    }]
+  }
 }
 
 function migrateShippingAndBillingDetailsWidgets(widget) {
