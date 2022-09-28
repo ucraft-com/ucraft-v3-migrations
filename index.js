@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const { cloneDeep, isEqual } = require('lodash');
 const glob = require('glob');
+const { uuidGenerator } = require('./utils');
 
 const backendPublicFolder = (/--backendPublicFolder=([^\s]*)/.exec(
   process.argv.join(" ")
@@ -106,7 +107,7 @@ const uploadButtonFormItemConfig = [
 ];
 
 glob(
-  path.resolve(backendPublicFolder || __dirname, '**/*.json').replace(/\\/gmi,'/'),
+  path.resolve(backendPublicFolder || __dirname, '**/*.json').replace(/\\/gmi, '/'),
   (_err, result) => {
     result.forEach((file) => {
       const content = fs.readFileSync(file);
@@ -179,27 +180,31 @@ function migrate(layout) {
 }
 
 function migrateBurgerMenuToButton(widget) {
-  if (widget.type === 'icon' && widget.params.labelKey === 'burgerMenu') {
+  if (widget.type === 'icon' && widget.params?.labelKey === 'burgerMenu') {
     widget.type = 'button';
     widget.key = 'btn';
     widget.params.props = { contentType: 'iconOnly' };
     widget.children = [{
       type: 'icon',
+      hash: uuidGenerator(),
       params: {
         key: 'icn',
         isMicroElement: true,
         showContentInParent: true,
         props: { iconKey: 'MenuOutlined' },
         labelKey: 'burgerMenuIcon',
+        settings: [],
         variantsStyles: []
       }
     },
     {
       type: 'label',
+      hash: uuidGenerator(),
       params: {
         key: 'lbl',
         isMicroElement: true,
         showContentInParent: true,
+        settings: [],
         props: { text: 'Label' }
       }
     }]
