@@ -157,7 +157,7 @@ function migrate(layout) {
     }
 
     if (widget.type === 'formItem' && widget.children.length > 0) {
-      const isUploadButton = widget.params.settings?.validations.find(
+      const isUploadButton = widget.params?.settings?.validations.find(
         (validation) => validation.type === 'acceptTypes'
       );
 
