@@ -80,9 +80,6 @@ const uploadButtonFormItemConfig = [
           key: "icn",
           isMicroElement: true,
           showContentInParent: true,
-          props: {
-            iconKey: "UploadOutlined",
-          },
         },
         children: [],
       },
@@ -96,9 +93,6 @@ const uploadButtonFormItemConfig = [
           key: "lbl",
           isMicroElement: true,
           showContentInParent: true,
-          props: {
-            text: "Upload",
-          },
         },
         children: [],
       },
@@ -183,7 +177,6 @@ function migrateBurgerMenuToButton(widget) {
   if (widget.type === 'icon' && widget.params?.labelKey === 'burgerMenu') {
     widget.type = 'button';
     widget.key = 'btn';
-    widget.params.props = { contentType: 'iconOnly' };
     widget.children = [{
       type: 'icon',
       hash: uuidGenerator(),
@@ -191,7 +184,6 @@ function migrateBurgerMenuToButton(widget) {
         key: 'icn',
         isMicroElement: true,
         showContentInParent: true,
-        props: { iconKey: 'MenuOutlined' },
         labelKey: 'burgerMenuIcon',
         settings: [],
         variantsStyles: []
@@ -205,7 +197,6 @@ function migrateBurgerMenuToButton(widget) {
         isMicroElement: true,
         showContentInParent: true,
         settings: [],
-        props: { text: 'Label' }
       }
     }]
   }
@@ -233,17 +224,6 @@ function migrateShippingAndBillingDetailsWidgets(widget) {
       widget.params.settings = {
         ...widget.params.settings,
         ...currentFormSettings,
-      };
-
-      // we need to update props to include form widget's props as well
-      const currentFormProps = {
-        limitReachMessage: "Form is no longer available.",
-        deadlineReachMessage: "Form is no longer available.",
-      };
-
-      widget.params.props = {
-        ...widget.params.props,
-        ...currentFormProps,
       };
 
       // we need to update defualtUiElements to include form widget's defualtUiElements as well
